@@ -1,1 +1,53 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+from datetime import datetime
 
+# If Seaborn is available, you might want to import it; otherwise, you can skip this
+# import seaborn as sns
+
+# Load data
+customers = pd.read_csv('Customers.csv')
+products = pd.read_csv('Products.csv')
+transactions = pd.read_csv('Transactions.csv')
+
+# Display first few rows of each dataframe
+print(customers.head())
+print(products.head())
+print(transactions.head())
+
+# Check for missing values
+print(customers.isnull().sum())
+print(products.isnull().sum())
+print(transactions.isnull().sum())
+
+# Convert date strings to datetime
+customers['SignupDate'] = pd.to_datetime(customers['SignupDate'])
+transactions['TransactionDate'] = pd.to_datetime(transactions['TransactionDate'])
+
+# Customer distribution by region
+region_counts = customers['Region'].value_counts()
+plt.figure(figsize=(10, 5))
+region_counts.plot(kind='bar')
+plt.title('Customer Distribution by Region')
+plt.xlabel('Region')
+plt.ylabel('Number of Customers')
+plt.show()
+
+# Price distribution of products
+# Using only matplotlib since seaborn might not be available
+plt.figure(figsize=(10, 5))
+plt.hist(products['Price'], bins=30, density=True)
+# Here's a basic way to overlay a KDE plot without seaborn
+kde = products['Price'].plot(kind='kde', ax=plt.gca(), secondary_y=True)
+plt.title('Price Distribution of Products')
+plt.xlabel('Price (USD)')
+plt.show()
+
+# Monthly sales over time
+monthly_sales = transactions.resample('M', on='TransactionDate')['TotalValue'].sum()
+plt.figure(figsize=(12, 6))
+monthly_sales.plot()
+plt.title('Monthly Sales Over Time')
+plt.xlabel('Date')
+plt.ylabel('Total Sales Value')
+plt.show()
